@@ -3,8 +3,8 @@ import "./globals.css";
 import "./lib/envSetup";
 
 export const metadata: Metadata = {
-  title: "Realtime API Agents",
-  description: "A demo app from OpenAI.",
+  title: "mbti会話練習アプリ",
+  description: "気になるあの子とうまくしゃべれないそこの君！気になる相手のmbtiを入力して会話練習をしようじゃないか！",
 };
 
 export default function RootLayout({

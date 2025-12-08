@@ -6,7 +6,6 @@ import { TranscriptItem } from "@/app/types";
 import Image from "next/image";
 import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { DownloadIcon, ClipboardCopyIcon } from "@radix-ui/react-icons";
-import { GuardrailChip } from "./GuardrailChip";
 
 export interface TranscriptProps {
   userText: string;
@@ -153,11 +152,6 @@ function Transcript({
                         <ReactMarkdown>{displayTitle}</ReactMarkdown>
                       </div>
                     </div>
-                    {guardrailResult && (
-                      <div className="bg-gray-200 px-3 py-2 rounded-b-xl">
-                        <GuardrailChip guardrailResult={guardrailResult} />
-                      </div>
-                    )}
                   </div>
                 </div>
               );

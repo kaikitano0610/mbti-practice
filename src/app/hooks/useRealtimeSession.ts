@@ -4,15 +4,10 @@ import {
   RealtimeAgent,
   OpenAIRealtimeWebRTC,
 } from '@openai/agents/realtime';
-
-import { applyCodecPreferences } from '../lib/codecUtils';
-import { useEvent } from '../contexts/EventContext';
-import { useHandleSessionHistory } from './useHandleSessionHistory';
 import { SessionStatus } from '../types';
 
 export interface RealtimeSessionCallbacks {
   onConnectionChange?: (status: SessionStatus) => void;
-  onAgentHandoff?: (agentName: string) => void;
 }
 
 export interface ConnectOptions {
@@ -20,95 +15,30 @@ export interface ConnectOptions {
   initialAgents: RealtimeAgent[];
   audioElement?: HTMLAudioElement;
   extraContext?: Record<string, any>;
-  outputGuardrails?: any[];
+  onMessageCreated?: (id: string, role: "user" | "assistant", text: string) => void;
+  onMessageUpdated?: (id: string, text: string, isDelta: boolean) => void;
 }
 
 export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
   const sessionRef = useRef<RealtimeSession | null>(null);
-  const [status, setStatus] = useState<
-    SessionStatus
-  >('DISCONNECTED');
-  const { logClientEvent } = useEvent();
+  const [status, setStatus] = useState<SessionStatus>('DISCONNECTED');
 
   const updateStatus = useCallback(
     (s: SessionStatus) => {
       setStatus(s);
       callbacks.onConnectionChange?.(s);
-      logClientEvent({}, s);
     },
     [callbacks],
   );
 
-  const { logServerEvent } = useEvent();
-
-  const historyHandlers = useHandleSessionHistory().current;
-
-  function handleTransportEvent(event: any) {
-    // Handle additional server events that aren't managed by the session
-    switch (event.type) {
-      case "conversation.item.input_audio_transcription.completed": {
-        historyHandlers.handleTranscriptionCompleted(event);
-        break;
-      }
-      case "response.audio_transcript.done": {
-        historyHandlers.handleTranscriptionCompleted(event);
-        break;
-      }
-      case "response.audio_transcript.delta": {
-        historyHandlers.handleTranscriptionDelta(event);
-        break;
-      }
-      default: {
-        logServerEvent(event);
-        break;
-      } 
-    }
-  }
-
-  const codecParamRef = useRef<string>(
-    (typeof window !== 'undefined'
-      ? (new URLSearchParams(window.location.search).get('codec') ?? 'opus')
-      : 'opus')
-      .toLowerCase(),
-  );
-
-  // Wrapper to pass current codec param.
-  // This lets you use the codec selector in the UI to force narrow-band (8 kHz) codecs to
-  // simulate how the voice agent sounds over a PSTN/SIP phone call.
-  const applyCodec = useCallback(
-    (pc: RTCPeerConnection) => applyCodecPreferences(pc, codecParamRef.current),
-    [],
-  );
-
-  const handleAgentHandoff = (item: any) => {
-    const history = item.context.history;
-    const lastMessage = history[history.length - 1];
-    const agentName = lastMessage.name.split("transfer_to_")[1];
-    callbacks.onAgentHandoff?.(agentName);
-  };
-
   useEffect(() => {
     if (sessionRef.current) {
-      // Log server errors
-      sessionRef.current.on("error", (...args: any[]) => {
-        logServerEvent({
-          type: "error",
-          message: args[0],
-        });
+      // エラーハンドリング
+      sessionRef.current.on("error", (error: any) => {
+        console.error("Session Error:", error);
       });
-
-      // history events
-      sessionRef.current.on("agent_handoff", handleAgentHandoff);
-      sessionRef.current.on("agent_tool_start", historyHandlers.handleAgentToolStart);
-      sessionRef.current.on("agent_tool_end", historyHandlers.handleAgentToolEnd);
-      sessionRef.current.on("history_updated", historyHandlers.handleHistoryUpdated);
-      sessionRef.current.on("history_added", historyHandlers.handleHistoryAdded);
-      sessionRef.current.on("guardrail_tripped", historyHandlers.handleGuardrailTripped);
-
-      // additional transport events
-      sessionRef.current.on("transport_event", handleTransportEvent);
     }
-  }, [sessionRef.current]);
+  }, []); // sessionRef.currentは可変なので依存配列は空でOK
 
   const connect = useCallback(
     async ({
@@ -116,36 +46,78 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
       initialAgents,
       audioElement,
       extraContext,
-      outputGuardrails,
+      onMessageCreated,
+      onMessageUpdated,
     }: ConnectOptions) => {
-      if (sessionRef.current) return; // already connected
+      if (sessionRef.current) return;
 
       updateStatus('CONNECTING');
 
-      const ek = await getEphemeralKey();
-      const rootAgent = initialAgents[0];
+      try {
+        const ek = await getEphemeralKey();
+        const rootAgent = initialAgents[0];
 
-      sessionRef.current = new RealtimeSession(rootAgent, {
-        transport: new OpenAIRealtimeWebRTC({
-          audioElement,
-          // Set preferred codec before offer creation
-          changePeerConnection: async (pc: RTCPeerConnection) => {
-            applyCodec(pc);
-            return pc;
+        sessionRef.current = new RealtimeSession(rootAgent, {
+          transport: new OpenAIRealtimeWebRTC({
+            audioElement,
+          }),
+          model: 'gpt-4o-realtime-preview-2025-06-03',
+          config: {
+            inputAudioTranscription: {
+              model: 'gpt-4o-mini-transcribe',
+            },
           },
-        }),
-        model: 'gpt-4o-realtime-preview-2025-06-03',
-        config: {
-          inputAudioTranscription: {
-            model: 'gpt-4o-mini-transcribe',
-          },
-        },
-        outputGuardrails: outputGuardrails ?? [],
-        context: extraContext ?? {},
-      });
+          context: extraContext ?? {},
+        });
 
-      await sessionRef.current.connect({ apiKey: ek });
-      updateStatus('CONNECTED');
+        // -----------------------------------------------------------
+        // 修正ポイント：すべてのイベントを 'transport_event' で受け取る
+        // -----------------------------------------------------------
+        sessionRef.current.on('transport_event', (event: any) => {
+          switch (event.type) {
+            // 1. 新しい会話アイテム（吹き出し）が作成された
+            case 'conversation.item.created': {
+              const { item } = event;
+              if (item.type === 'message') {
+                let text = "";
+                if (item.content && item.content[0]?.type === 'text') {
+                  text = item.content[0].text || "";
+                }
+                onMessageCreated?.(item.id, item.role, text);
+              }
+              break;
+            }
+
+            // 2. ユーザーの音声認識が完了してテキストが確定した
+            case 'conversation.item.input_audio_transcription.completed': {
+              const { item_id, transcript } = event;
+              onMessageUpdated?.(item_id, transcript, false);
+              break;
+            }
+
+            // 3. AIの返答が生成されている途中（ストリーミング）
+            case 'response.audio_transcript.delta': {
+              const { item_id, delta } = event;
+              onMessageUpdated?.(item_id, delta, true);
+              break;
+            }
+            
+            // 4. AIのテキスト生成完了（念のため）
+            case 'response.text.done': {
+              const { item_id, text } = event;
+              onMessageUpdated?.(item_id, text, false);
+              break;
+            }
+          }
+        });
+
+        await sessionRef.current.connect({ apiKey: ek });
+        updateStatus('CONNECTED');
+      } catch (err) {
+        console.error("Failed to connect:", err);
+        updateStatus('DISCONNECTED');
+        sessionRef.current = null;
+      }
     },
     [callbacks, updateStatus],
   );
@@ -156,19 +128,22 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
     updateStatus('DISCONNECTED');
   }, [updateStatus]);
 
-  const assertconnected = () => {
-    if (!sessionRef.current) throw new Error('RealtimeSession not connected');
+  const assertConnected = () => {
+    if (!sessionRef.current) {
+      console.warn('RealtimeSession not connected');
+      return false;
+    }
+    return true;
   };
 
-  /* ----------------------- message helpers ------------------------- */
-
   const interrupt = useCallback(() => {
-    sessionRef.current?.interrupt();
+    if(sessionRef.current) sessionRef.current.interrupt();
   }, []);
   
   const sendUserText = useCallback((text: string) => {
-    assertconnected();
-    sessionRef.current!.sendMessage(text);
+    if(assertConnected()) {
+        sessionRef.current!.sendMessage(text);
+    }
   }, []);
 
   const sendEvent = useCallback((ev: any) => {
@@ -179,17 +154,6 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
     sessionRef.current?.mute(m);
   }, []);
 
-  const pushToTalkStart = useCallback(() => {
-    if (!sessionRef.current) return;
-    sessionRef.current.transport.sendEvent({ type: 'input_audio_buffer.clear' } as any);
-  }, []);
-
-  const pushToTalkStop = useCallback(() => {
-    if (!sessionRef.current) return;
-    sessionRef.current.transport.sendEvent({ type: 'input_audio_buffer.commit' } as any);
-    sessionRef.current.transport.sendEvent({ type: 'response.create' } as any);
-  }, []);
-
   return {
     status,
     connect,
@@ -197,8 +161,6 @@ export function useRealtimeSession(callbacks: RealtimeSessionCallbacks = {}) {
     sendUserText,
     sendEvent,
     mute,
-    pushToTalkStart,
-    pushToTalkStop,
     interrupt,
   } as const;
 }
