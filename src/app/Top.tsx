@@ -13,7 +13,7 @@ export default function Top() {
   };
 
   return (
-    <div className="bg-[#fff6ea] flex flex-col items-center h-full">
+    <div className="bg-[#fff6ea] flex flex-col items-center min-h-screen">
       <Image
         src="/title.png"
         alt=""
