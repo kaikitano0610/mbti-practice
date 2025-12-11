@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./lib/envSetup";
+import { Mochiy_Pop_P_One } from "next/font/google";
+
+const mochiy = Mochiy_Pop_P_One({
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "mbti会話練習アプリ",
@@ -14,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`${mochiy.className} antialiased`}>{children}</body>
     </html>
   );
 }
