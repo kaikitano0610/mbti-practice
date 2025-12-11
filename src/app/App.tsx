@@ -13,7 +13,8 @@ import { useTranscript } from "@/app/contexts/TranscriptContext";
 import { useRealtimeSession } from "./hooks/useRealtimeSession";
 
 // Config
-import { defaultAgentSet } from "@/app/characters";
+import { defaultCharacter } from "@/app/characters";
+import { RealtimeAgent } from "@openai/agents/realtime";
 
 function App() {
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>("DISCONNECTED");
@@ -79,9 +80,15 @@ function App() {
       const EPHEMERAL_KEY = await fetchEphemeralKey();
       if (!EPHEMERAL_KEY) return;
 
+      const initialAgent = new RealtimeAgent({
+        name: defaultCharacter.name,
+        instructions: defaultCharacter.baseInstructions,
+        voice: defaultCharacter.voice,
+      });
+
       await connect({
         getEphemeralKey: async () => EPHEMERAL_KEY,
-        initialAgents: defaultAgentSet,
+        initialAgents: [initialAgent],
         audioElement: sdkAudioElement,
         extraContext: { addTranscriptBreadcrumb },
         // ↓ 以下の2行を追加：これで字幕機能と通信機能を接続します
@@ -89,7 +96,7 @@ function App() {
         onMessageUpdated: (id, text, isDelta) => updateTranscriptMessage(id, text, isDelta),
       });
       
-      addTranscriptBreadcrumb(`Agent: ${defaultAgentSet[0].name}`, defaultAgentSet[0]);
+      addTranscriptBreadcrumb(`Agent: ${initialAgent.name}`, initialAgent);
 
     } catch (err) {
       console.error("Error connecting:", err);

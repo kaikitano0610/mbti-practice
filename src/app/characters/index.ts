@@ -1,11 +1,41 @@
-import { RealtimeAgent } from '@openai/agents/realtime';
+// src/app/characters/index.ts
 
-// 最低限のシンプルエージェント定義
-export const demoAgent = new RealtimeAgent({
-  name: 'Demo Agent',
-  instructions: 'You are a helpful AI assistant. Please respond concisely.',
-  voice: 'alloy',
-});
+import { ISTJData } from './ISTJ';
+import { ISFJData } from './ISFJ';
+import { INFJData } from './INFJ';
+import { INTJData } from './INTJ';
+import { ISTPData } from './ISTP';
+import { ISFPData } from './ISFP';
+import { INFPData } from './INFP';
+import { INTPData } from './INTP';
+import { ESTPData } from './ESTP';
+import { ESFPData } from './ESFP';
+import { ENFPData } from './ENFP';
+import { ENTPData } from './ENTP';
+import { ESTJData } from './ESTJ';
+import { ESFJData } from './ESFJ';
+import { ENFJData } from './ENFJ';
+import { ENTJData } from './ENTJ';
 
-// App.tsxで読み込むためのエクスポート
-export const defaultAgentSet = [demoAgent];
+// 全キャラをまとめる
+export const characters: Record<string, typeof ESTPData> = {
+  ISTJ: ISTJData,
+  ISFJ: ISFJData,
+  INFJ: INFJData,
+  INTJ: INTJData,
+  ISTP: ISTPData,
+  ISFP: ISFPData,
+  INFP: INFPData,
+  INTP: INTPData,
+  ESTP: ESTPData,
+  ESFP: ESFPData,
+  ENFP: ENFPData,
+  ENTP: ENTPData,
+  ESTJ: ESTJData,
+  ESFJ: ESFJData,
+  ENFJ: ENFJData,
+  ENTJ: ENTJData,
+};
+
+// デフォルトキャラ（エラー回避用）
+export const defaultCharacter = ESTPData;
