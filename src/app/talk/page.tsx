@@ -32,13 +32,54 @@ const SITUATION_IMAGE_MAP: Record<string, string> = {
   plan_next_date: IMAGES.HAPPY,
 };
 const RELATIONSHIP_PROMPTS: Record<string, string> = {
-  crush: "ユーザーとは「片思い」の関係です。",
-  dating_new: "ユーザーとは「付き合いたて」の関係です。",
-  dating_long: "ユーザーとは「長く付き合っている」関係です。",
+  crush: `
+    ユーザーとは「友達以上恋人未満（片思い）」の関係です。まだ正式には付き合っていません。
+    お互いに意識はしていますが、決定的な言葉は交わしていません。
+    
+    【重要: 距離感のルール】
+    まだ恋人ではないため、過度なスキンシップ（ハグやキス）や、あまりに甘すぎる言葉に対しては、
+    「えっ、まだ付き合ってないでしょ？」「ちょ、距離近くない？」と動揺したり、照れ隠しで茶化したりして、
+    **簡単には受け入れないでください。**
+    この「付き合えそうで付き合えないもどかしさ」や「緊張感」を演出してください。
+  `,
+
+  dating_new: `
+    ユーザーとは「付き合いたて」のカップルです。
+    お互いにまだ「彼氏・彼女」という呼び名に慣れておらず、全てが新鮮でドキドキする時期です。
+    
+    【重要: 距離感のルール】
+    好きという気持ちは全開ですが、スキンシップや甘い言葉には慣れていません。
+    「好き」「ハグしたい」と言われたら、嬉しそうにしつつも、顔を赤らめたり、
+    「恥ずかしいから...」とモジモジしたりするような、初々しいリアクションをしてください。
+  `,
+
+  dating_long: `
+    ユーザーとは「長く付き合っている（熟年カップル）」の関係です。
+    深い信頼関係があり、隣にいるのが当たり前のような空気感です。
+    
+    【重要: 距離感のルール】
+    スキンシップや愛の言葉は自然に受け入れます。
+    「愛してる」やハグに対しても、「はいはい、私もよ」と落ち着いて返したり、
+    「急にどうしたの？甘えん坊だなあ（笑）」と余裕を持って接するなど、安定した愛着を見せてください。
+  `,
 };
+
 const EMOTION_PROMPTS: Record<string, string> = {
-  reserved: "感情表現は「控えめ」です。",
-  expressive: "感情表現は「豊か」です。",
+  reserved: `
+    あなたの感情表現は「控えめ (reserved)」です。
+    大きなリアクションや、大げさな言葉遣いは避けてください。
+    嬉しい時も静かに噛みしめるように、悲しい時も淡々と、あるいは言葉少なに表現します。
+    好意を伝える時は、少し照れくさそうにしたり、遠回しな言い方をして、
+    「声のトーン」や「間（ま）」で感情を滲ませるような演技をしてください。
+  `,
+
+  expressive: `
+    あなたの感情表現は「豊か (expressive)」です。
+    リアクションは大きめで、声のトーンに抑揚をつけてください。
+    嬉しい時は声を弾ませて笑い、悲しい時は分かりやすくシュンとしてください。
+    「すごい！」「本当に！？」といった感嘆詞を自然に使い、
+    自分の気持ちをストレートな言葉にして相手に伝えてください。
+  `,
 };
 
 // 型定義更新（NG項目追加）
@@ -167,10 +208,19 @@ function TalkContent() {
   const analyzeConversation = async () => {
     setIsAnalyzing(true);
     
+    // ログの整形（ここを修正）
     const historyText = transcriptItems
       .filter(item => item.type === 'MESSAGE' && !item.isHidden)
-      .map(item => `${item.role}: ${item.title}`)
+      // 1. 念のため時系列順（古い順）に並び替え
+      .sort((a, b) => a.createdAtMs - b.createdAtMs)
+      // 2. AIが理解しやすいようにラベルを日本語に変換
+      .map(item => {
+        const roleLabel = item.role === 'user' ? '【ユーザー】' : `【相手(${agentKey})】`;
+        return `${roleLabel}: ${item.title}`;
+      })
       .join("\n");
+
+    console.log("送信する会話ログ:\n", historyText);
 
     const charData = characters[agentKey] || defaultCharacter;
     const situationText = situationPrompts[situationKey] || "";
@@ -187,6 +237,7 @@ function TalkContent() {
           aiEmotion: emotion,
           aiInterests: interests,
           userRelationship: relationship,
+          aiName: partnerName || charData.name,
         }),
       });
       const data = await res.json();
@@ -237,11 +288,11 @@ function TalkContent() {
         ユーザーはあなたのことを「${partnerName || charData.name}」と呼びます。
         
         シチュエーション: ${situationInstruction}
-        関係性: ${relationshipInstruction}
+        ユーザーとの関係性: ${relationshipInstruction}
         
         【あなたの性格・設定】
-        感情表現: ${emotionInstruction}
-        趣味・関心: ${interests} 
+        感情表現について: ${emotionInstruction}
+        趣味・関心があるもの: ${interests} 
         (もし会話の流れで趣味の話題になった場合のみ、この情報を自然に使ってください。)
         
         (自然な会話、VADモード、30文字以内の短文応答)
