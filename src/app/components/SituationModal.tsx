@@ -25,6 +25,9 @@ export default function SituationModal({ isOpen, situation, onClose, onSelect }:
 					onChange={(e) => onSelect(e.target.value)}
 					className="w-full border-2 border-black rounded-lg p-3 text-lg"
 					>
+						<option value="" disabled>
+							シチュエーションを選択してね
+						</option>
 						{Situations.map((s) => (
 							<option key={s.id} value={s.id}>
 								{s.label}

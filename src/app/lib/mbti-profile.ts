@@ -6,6 +6,8 @@ export type MBTIProfile = {
 	color: string;
 	loveStyle: string;
 	group: "SJ" | "NF" | "SP" | "NT";
+	imgWidth?: number;
+	imgHeight?: number;  
 }
 
 export const MBTIProfiles: Record<string, MBTIProfile> = {
@@ -26,6 +28,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "主導権を握りたがる情熱家。高い基準を持つ...",
 		group: "NT",
+		imgWidth: 150,
 	},
 	INTJ: {
 		img: "/mbti/nt/intj.png",
@@ -35,6 +38,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "論理的で慎重。一度心を許すと深く献身的に...",
 		group: "NT",
+		imgWidth: 150
 	},
 	INTP: {
 		img: "/mbti/nt/intp.png",
@@ -44,6 +48,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "知的な繋がりを重視する。独自のペースがある...",
 		group: "NT",
+		imgWidth: 110,
 	},
 	INFJ: {
 		img: "/mbti/nf/infj.png",
@@ -53,6 +58,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "精神的な深いつながりを求める。相手の感情...",
 		group: "NF",
+		imgWidth: 110,
 	},
 	INFP: {
 		img: "/mbti/nf/infp.png",
@@ -62,6 +68,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "ロマンチストで理想を追い求める。相手の全...",
 		group: "NF",
+		imgWidth: 140,
 	},
 	ENFJ: {
 		img: "/mbti/nf/enfj.png",
@@ -71,6 +78,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "パートナーの幸せが自分の幸せ。コミュニケ...",
 		group: "NF",
+		imgWidth: 120,
 	},
 	ENFP: {
 		img: "/mbti/nf/enfp.png",
@@ -80,6 +88,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "情熱的でサプライズ好き。一緒に新しいこと...",
 		group: "NF",
+		imgWidth: 110,
 	},
 	ISTJ: {
 		img: "/mbti/sj/istj.png",
@@ -89,6 +98,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "誠実で責任感が強い。言葉よりも行動で愛情...",
 		group: "SJ",
+		imgWidth: 140,
 	},
 	ISFJ: {
 		img: "/mbti/sj/isfj.png",
@@ -98,6 +108,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "思いやりがあり、細やかな気配りができる...",
 		group: "SJ",
+		imgWidth: 200,
 	},
 	ESTJ: {
 		img: "/mbti/sj/estj.png",
@@ -107,6 +118,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: " 伝統やルールを重んじる。率直に気持ちを伝...",
 		group: "SJ",
+		imgWidth: 150,
 	},
 	ESFJ: {
 		img: "/mbti/sj/esfj.png",
@@ -116,6 +128,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "社交的で世話好き。パートナーを喜ばせるこ...",
 		group: "SJ",
+		imgWidth: 180,
 	},
 	ISTP: {
 		img: "/mbti/sp/istp.png",
@@ -125,6 +138,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "自由を愛し、ベタベタするのは苦手。しかし...",
 		group: "SP",
+		imgWidth: 170,
 	},
 	ISFP: {
 		img: "/mbti/sp/isfp.png",
@@ -134,6 +148,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "繊細で感受性が豊か。言葉よりも雰囲気や共...",
 		group: "SP",
+		imgWidth: 160,
 	},
 	ESTP: {
 		img: "/mbti/sp/estp.png",
@@ -143,6 +158,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: "スリルとアクションを求める。退屈なデート...",
 		group: "SP",
+		imgWidth: 150,
 	},
 	ESFP: {
 		img: "/mbti/sp/esfp.png",
@@ -152,6 +168,7 @@ export const MBTIProfiles: Record<string, MBTIProfile> = {
 		color: "text-red-500",
 		loveStyle: " 陽気でサプライズ好き。今この瞬間を全力で...",
 		group: "SP",
+		imgWidth: 140,
 	},
 
 }

@@ -23,14 +23,20 @@ export default function Page() {
     setSelectMbti(mbti);
     setIsModalOpen(true);
   }
-
   const mbtiGroups = [
-      { name: "ALL", color: "gray-500", dot: false },
-      { name: "SP", color: "yellow-500", dot: true },
-      { name: "NF", color: "emerald-500", dot: true },
-      { name: "NT", color: "orange-500", dot: true },
-      { name: "SJ", color: "blue-600", dot: true },
-    ];
+  { name: "ALL", dot: false },
+  { name: "SP", dot: true, gradient: "linear-gradient(145deg, #FFC107, #FFEB3B)" },
+  { name: "NF", dot: true, gradient: "linear-gradient(145deg, #4CAF50, #00C853)" },
+  { name: "NT", dot: true, gradient: "linear-gradient(145deg, #8E2DE2, #4A00E0)" },
+  { name: "SJ", dot: true, gradient: "linear-gradient(145deg, #2196F3, #1976D2)" },
+  ];
+
+  const groupGradients: Record<string, string> = {
+    NT: "linear-gradient(145deg, #8b5cf6, #6d28d9)", // 紫
+    NF: "linear-gradient(145deg, #22c55e, #16a34a)", // 緑
+    SJ: "linear-gradient(145deg, #3b82f6, #1d4ed8)", // 青
+    SP: "linear-gradient(145deg, #facc15, #f59e0b)", // 黄
+  }
 
   // タグの共通スタイル
   const tagBaseClasses = `
@@ -71,15 +77,7 @@ export default function Page() {
                   className={`w-5 h-5 rounded-full mr-2 bg-${group.color} shadow-sm`}
                   // グラデーション効果を再現するために、インラインスタイルでグラデーションを設定
                   style={{
-                      background: group.name === 'NT' 
-                          ? 'linear-gradient(145deg, #ff8c00, #ff4500)' // SF (オレンジ〜赤)
-                          : group.name === 'SP' 
-                          ? 'linear-gradient(145deg, #FFC107, #FFEB3B)' // ST (黄色〜明るい黄色)
-                          : group.name === 'NF' 
-                          ? 'linear-gradient(145deg, #4CAF50, #00C853)' // NF (緑)
-                          : group.name === 'SJ'
-                          ? 'linear-gradient(145deg, #2196F3, #1976D2)' // NT (青)
-                          : undefined
+                    background: groupGradients[group.name],
                   }}
                 ></span>
               )}
@@ -100,15 +98,7 @@ export default function Page() {
                 <span 
                   className={`w-5 h-5 rounded-full mr-2 bg-${group.color} shadow-sm`}
                   style={{
-                      background: group.name === 'NT' 
-                          ? 'linear-gradient(145deg, #ff8c00, #ff4500)' 
-                          : group.name === 'SP' 
-                          ? 'linear-gradient(145deg, #FFC107, #FFEB3B)' 
-                          : group.name === 'NF' 
-                          ? 'linear-gradient(145deg, #4CAF50, #00C853)' 
-                          : group.name === 'SJ'
-                          ? 'linear-gradient(145deg, #2196F3, #1976D2)'
-                          : undefined
+                    background: groupGradients[group.name],
                   }}
                 ></span>
               )}
@@ -132,12 +122,13 @@ export default function Page() {
       <SelectModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        selectedMbti={selectMbti}
         onSubmit={(info) => {
-          console.log(info);
-          // situation + mbti + info をまとめて次ページへ
           router.push(
             `/talk?mbti=${selectMbti}` +
             `&situation=${situation}` +
+            `&partnerName=${encodeURIComponent(info.partnerName)}` +
+            `&partnerPronoun=${encodeURIComponent(info.partnerPronoun)}` +
             `&relationship=${info.relationship}` +
             `&emotion=${info.emotion}` +
             `&interests=${encodeURIComponent(info.interests)}`
