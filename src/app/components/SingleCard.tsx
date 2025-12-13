@@ -1,13 +1,25 @@
 "use client";
 import Image from "next/image";
+import { MBTIProfile } from "../lib/mbti-profile";
 
-export default function SingleCard({ type, profile }) {
+type SingleCardProps = {
+  type: string;
+  profile: MBTIProfile
+  onClick: () => void;
+};
+
+
+
+export default function SingleCard({ type, profile, onClick }: SingleCardProps) {
+
   return (
-    <div
+    <button
+      type="button"
+      onClick={onClick}
       className="
         cursor-pointer overflow-hidden relative group h-full flex flex-col 
         bg-white border-2 border-black rounded-xl
-        p-0
+        p-0 focus:outline-none focus:ring-4 focus:ring-black/30
       "
       style={{ width: "260px" }}
     >
@@ -41,6 +53,6 @@ export default function SingleCard({ type, profile }) {
           <p className="text-xs text-red-500">❤️ {profile.loveStyle}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

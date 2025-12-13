@@ -2,15 +2,28 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import SingleCard from "../components/SingleCard";
 import {MBTIProfiles} from "../lib/mbti-profile";
+import SelectModal from "../components/SelectModal";
 
 export default function Page() {
+  const searchParams = useSearchParams();
+  const situation = searchParams.get("situation");
   const router = useRouter();
+  
+  const [selectMbti, setSelectMbti] = useState<string | null>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const handleStart = () => {
     router.push("/");
   };
+  const handleCardClick = (mbti: string) => {
+    setSelectMbti(mbti);
+    setIsModalOpen(true);
+  }
+
   const mbtiGroups = [
       { name: "ALL", color: "gray-500", dot: false },
       { name: "SP", color: "yellow-500", dot: true },
@@ -112,9 +125,25 @@ export default function Page() {
             key={key}
             type={key}
             profile={profile}
+            onClick={() => handleCardClick(key)}
           />
         ))}
       </div>
+      <SelectModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={(info) => {
+          console.log(info);
+          // situation + mbti + info をまとめて次ページへ
+          router.push(
+            `/talk?mbti=${selectMbti}` +
+            `&situation=${situation}` +
+            `&relationship=${info.relationship}` +
+            `&emotion=${info.emotion}` +
+            `&interests=${encodeURIComponent(info.interests)}`
+          );
+        }}
+      />
     </div>
   );
 }
