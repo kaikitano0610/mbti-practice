@@ -3,13 +3,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+import SituationModal from "./components/SituationModal";
+import { Situation, Situations } from "./lib/situations";
+
 export default function Top() {
   const router = useRouter();
-  const [situation, setSituation] = useState("cafe_date");
-  const [gender, setGender] = useState("female");
+  const [situation, setSituation] = useState("");
+  const [isSituationOpen, setIsSituationOpen] = useState(false);
 
   const handleStart = () => {
-    router.push(`/select?situation=${situation}&gender=${gender}`);
+    router.push(`/select?situation=${situation}`);
   };
 
   return (
@@ -23,10 +26,26 @@ export default function Top() {
       />
 
       <div className="flex flex-col justify-center mt-20">
-        {/* 1. シチュエーションボタン (画像通りの白ボタン) */}
+        <div className="w-80 mx-auto mb-5">
+          <p className="text-center text-2xl break-words">
+            {!situation ? (
+              <span>シチュエーションを選択してね！</span>
+            ) : (
+              <>
+                <span>選択中：</span>
+                <br />
+                <span>
+                  {Situations.find((s) => s.id === situation)?.label}
+                </span>
+              </>
+            )}
+          </p>
+        </div>
+        {/* 1. シチュエーションボタン*/}
         <button
+          onClick={() => setIsSituationOpen(true)}
           className="
-            w-80
+            w-80 mx-auto
             bg-white py-4 px-14 rounded-xl mb-10 font-bold
             inline-flex items-center justify-center
             transition-all duration-200 ease-in-out text-2xl border-2 border-black
@@ -34,46 +53,26 @@ export default function Top() {
         >
           <span>シチュエーション</span>
         </button>
-
-        {/* 2. 性別ボタン (画像通りの白ボタン) */}
-        <button
-          className="
-            w-80
-            bg-white py-4 px-14 rounded-xl mb-5 font-bold
-            inline-flex items-center justify-center
-            transition-all duration-200 ease-in-out text-2xl border-2 border-black
-          "
-        >
-          <span>性別</span>
-        </button>
       </div>
 
-      {/* 3. 今すぐ話すボタン (画像通りの赤ボタン、アイコン付き、影あり) */}
+      {/* 3. 今すぐ話すボタン*/}
       <button
         onClick={handleStart}
         className="
           w-80 fixed
-          /* ★背景色、テキスト色をカスタムに設定★ */
           bg-[#FF1010] text-white py-4 px-14 rounded-xl bottom-[30px]
           
           inline-flex items-center justify-center
           transition-all duration-200 ease-in-out text-2xl 
-          /* ★画像では枠線がないため border-2 border-black は含めない★ */
-          
-          /* ★立体的な影を適用★ */
+        
           shadow-[6px_6px_0_0_#000000]
           hover:shadow-[2px_2px_0_0_#000000]
           active:shadow-[0px_0px_0_0_#000000]
-          
-          /* ★影のオフセット（5px）に合わせて沈み込み量を修正★ */
           active:translate-x-[5px]
           active:translate-y-[5px]
-          
-          /* ★ホバー時の色をカスタムカラーに合わせて修正★ */
           hover:bg-[#e60e0e]
         "
       >
-        {/* ★アイコンを復活★ */}
         <svg
           className="w-6 h-6 mr-3"
           fill="none"
@@ -91,6 +90,12 @@ export default function Top() {
 
         <span>今すぐ話す</span>
       </button>
+      <SituationModal
+        isOpen={isSituationOpen}
+        situation={situation}
+        onSelect={setSituation}
+        onClose={() => setIsSituationOpen(false)}
+      />
     </div>
   );
 }
