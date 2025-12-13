@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { MBTIProfile } from "../lib/mbti-profile";
+import { MBTIGroupColors } from "../lib/mbti-colors";
 
 type SingleCardProps = {
   type: string;
@@ -24,13 +25,16 @@ export default function SingleCard({ type, profile, onClick }: SingleCardProps) 
       style={{ width: "260px" }}
     >
       <div
-        className={`h-24 w-full flex items-center justify-center ${profile.color} bg-[#8c52ff] overflow-hidden`}
+        className={`h-24 w-full flex items-center justify-center overflow-hidden`}
+        style={{
+          background: MBTIGroupColors[profile.group].gradient,
+        }}
       >
         <Image
           src={profile.img}
           alt=""
-          width={200}
-          height={150}
+          width={profile.imgWidth || 200}
+          height={profile.imgHeight || 150}
           className="mx-auto pt-20"
         />
       </div>

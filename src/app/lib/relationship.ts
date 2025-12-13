@@ -1,8 +1,12 @@
+export type PartnerName = string;
+export type PartnerPronoun = string;
 export type Relationship = "crush" | "dating_new" | "dating_long";
 export type EmotionExpression = "reserved" | "expressive";
 export type Interests = string;
 
 export type AdditionalContext = {
+	partnerName: PartnerName;
+	partnerPronoun: PartnerPronoun;
 	relationship: Relationship;
 	emotion: EmotionExpression;
 	interests: Interests;

@@ -8,7 +8,7 @@ import { Situation, Situations } from "./lib/situations";
 
 export default function Top() {
   const router = useRouter();
-  const [situation, setSituation] = useState("");
+  const [situation, setSituation] = useState<string>("");
   const [isSituationOpen, setIsSituationOpen] = useState(false);
 
   const handleStart = () => {
@@ -58,20 +58,20 @@ export default function Top() {
       {/* 3. 今すぐ話すボタン*/}
       <button
         onClick={handleStart}
-        className="
+        disabled={!situation}
+        className={`
           w-80 fixed
-          bg-[#FF1010] text-white py-4 px-14 rounded-xl bottom-[30px]
-          
+          py-4 px-14 rounded-xl bottom-[30px]
           inline-flex items-center justify-center
           transition-all duration-200 ease-in-out text-2xl 
-        
           shadow-[6px_6px_0_0_#000000]
           hover:shadow-[2px_2px_0_0_#000000]
           active:shadow-[0px_0px_0_0_#000000]
           active:translate-x-[5px]
           active:translate-y-[5px]
-          hover:bg-[#e60e0e]
-        "
+
+          ${situation ? "bg-[#FF1010] text-white hover:bg-[#e60e0e]" : "bg-gray-400 text-gray-200 cursor-not-allowed shadow-none"}
+        `}
       >
         <svg
           className="w-6 h-6 mr-3"
