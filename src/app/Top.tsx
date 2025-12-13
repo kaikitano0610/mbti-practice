@@ -15,6 +15,7 @@ export default function Top() {
 
   return (
     <div>
+
       <button onClick={handleStart}>
         今すぐ話す
       </button>
