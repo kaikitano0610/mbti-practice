@@ -39,6 +39,7 @@ export default function SelectPage() {
       <div style={{ display: "flex", gap: "10px" }}>
         <button onClick={() => handleCharClick("ENTP")}>ENTP</button>
         <button onClick={() => handleCharClick("INFP")}>INFP</button>
+        <button onClick={() => handleCharClick("ENFJ")}>ENFJ</button>
         ...
       </div>
 
