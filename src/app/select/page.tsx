@@ -169,7 +169,7 @@ function SelectContent() {
   };
 
   return (
-    <div className="bg-[#fff6ea] flex flex-col items-center min-h-screen relative">
+    <div className="bg-[url('/background.png')] bg-cover bg-center bg-no-repeat bg-fixed flex flex-col items-center min-h-screen relative">
       
       {isLoading && <LoadingSpinner />}
 
@@ -222,7 +222,7 @@ function SelectContent() {
       {/* 履歴表示エリア */}
       {savedProfiles.length > 0 && (
         <div className="w-full max-w-7xl px-4 mb-8">
-          <p className="text-xl font-bold mb-4 ml-2 text-gray-700">また話す？（履歴）</p>
+          <p className="text-xl mb-4 ml-2 text-gray-700">また話す？（履歴）</p>
           <div className="flex overflow-x-auto pb-4 gap-6 px-2 scrollbar-hide">
             {savedProfiles.map((saved) => {
               const originalProfile = MBTIProfiles[saved.mbti];

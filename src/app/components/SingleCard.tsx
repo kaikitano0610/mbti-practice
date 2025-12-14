@@ -87,7 +87,7 @@ export default function SingleCard({
         {/* LoveStyle (通常時のみ) */}
         {!isSaved && (
           <div className="mt-3 pt-2 border-t-2 border-dashed border-gray-200 w-full">
-            <p className="text-xs text-red-500 font-bold">❤️ {profile.loveStyle}</p>
+            <p className="text-xs text-red-500 leading-relaxed">❤️ {profile.loveStyle}</p>
           </div>
         )}
       </div>

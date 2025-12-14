@@ -30,7 +30,7 @@ export default function Top() {
   }, []);
 
   return (
-    <div className="bg-[#fff6ea] flex flex-col items-center min-h-screen relative">
+    <div className="bg-[url('/background.png')] bg-cover bg-center bg-no-repeat flex flex-col items-center min-h-screen">
       
       {/* ★追加: ローディング中はスピナーを表示 */}
       {isLoading && <LoadingSpinner />}
@@ -68,20 +68,13 @@ export default function Top() {
             bg-[#FF1010] text-white hover:bg-[#e60e0e]
           `}
         >
-          <svg
-            className="w-6 h-6 mr-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 10h.01M12 10h.01M16 10h.01M16 6H8a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2z"
-            ></path>
-          </svg>
+          <Image
+            src="/talkbtn.png"
+            alt=""
+            width={50}
+            height={50}
+            className="pt-1"
+          />
 
           <span>今すぐ話す</span>
         </button>
