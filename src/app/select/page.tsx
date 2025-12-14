@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 
@@ -22,14 +22,14 @@ type SavedProfile = AdditionalContext & {
   id: string; 
 };
 
-export default function Page() {
+// ★メインのロジック部分を別コンポーネントとして定義
+function SelectContent() {
   const searchParams = useSearchParams();
   const situation = searchParams.get("situation");
   const router = useRouter();
   
   const [selectMbti, setSelectMbti] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
   const [selectedGroup, setSelectedGroup] = useState<string>("ALL");
 
   // 履歴データ
@@ -37,10 +37,10 @@ export default function Page() {
   // 現在編集中のデータ（新規の場合はnull）
   const [editingProfile, setEditingProfile] = useState<SavedProfile | null>(null);
 
-  // ★追加: ローディング状態管理 (初期値true)
+  // ローディング状態管理 (初期値true)
   const [isLoading, setIsLoading] = useState(true);
 
-  // ★追加: 初回マウント時のローディング制御
+  // 初回マウント時のローディング制御
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -61,7 +61,6 @@ export default function Page() {
   }, []);
 
   const handleStart = () => {
-    // ★追加: 戻るボタン押下時にローディング開始
     setIsLoading(true);
     router.push("/");
   };
@@ -75,7 +74,6 @@ export default function Page() {
 
   // 履歴カードクリック（即会話開始）
   const handleSavedCardClick = (profile: SavedProfile) => {
-    // ★追加: 遷移前にローディング開始
     setIsLoading(true);
     router.push(
       `/talk?agent=${profile.mbti}` + 
@@ -100,14 +98,14 @@ export default function Page() {
     let updatedProfiles: SavedProfile[];
 
     if (editingProfile) {
-        // ★編集の場合：IDが一致するものを更新
+        // 編集の場合：IDが一致するものを更新
         updatedProfiles = savedProfiles.map(p => 
             p.id === editingProfile.id 
             ? { ...p, ...info } 
             : p
         );
     } else {
-        // ★新規の場合：先頭に追加
+        // 新規の場合：先頭に追加
         const newProfile: SavedProfile = {
             ...info,
             mbti: selectMbti,
@@ -126,7 +124,6 @@ export default function Page() {
       
       // 新規作成時のみ、そのまま会話へ遷移させる
       if (!editingProfile) {
-         // ★追加: 遷移前にローディング開始
          setIsLoading(true);
          router.push(
             `/talk?agent=${selectMbti}` +
@@ -139,7 +136,6 @@ export default function Page() {
         );
       }
   };
-
 
   const mbtiGroups = [
     { name: "ALL", dot: false },
@@ -158,9 +154,7 @@ export default function Page() {
 
   const filteredProfiles = useMemo(() => {
     const allProfiles = Object.entries(MBTIProfiles);
-
     if (selectedGroup === "ALL") return allProfiles;
-
     return allProfiles.filter(([_, profile]) => {
       return profile.group === selectedGroup;
     });
@@ -177,7 +171,6 @@ export default function Page() {
   return (
     <div className="bg-[#fff6ea] flex flex-col items-center min-h-screen relative">
       
-      {/* ★追加: ローディング表示 */}
       {isLoading && <LoadingSpinner />}
 
       <div className="w-full flex items-center">
@@ -188,7 +181,7 @@ export default function Page() {
             width={100}
             height={150}
             className="translate-y-[3px]"
-            priority // ★追加: 戻るボタンを優先読み込み
+            priority
           />
         </button>
         <p className="text-3xl">誰と話す？</p>
@@ -290,5 +283,14 @@ export default function Page() {
         initialValues={editingProfile || undefined}
       />
     </div>
+  );
+}
+
+// ★ここが重要！ Suspenseでラップしてexport defaultする
+export default function Page() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <SelectContent />
+    </Suspense>
   );
 }
