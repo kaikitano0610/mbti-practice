@@ -377,9 +377,25 @@ function TalkContent() {
             {isMuted ? <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>}
           </button>
         )}
-        <button onClick={toggleConnection} disabled={isConnecting} className={`w-24 h-24 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out transform ${isConnecting ? 'opacity-50 cursor-wait scale-95' : 'hover:scale-110 active:scale-95 drop-shadow-2xl'}`}>
-           <Image src={isConnected ? CALL_IMAGES.END : CALL_IMAGES.START} alt={isConnected ? "End Call" : "Start Call"} width={100} height={100} className="w-full h-full object-contain" priority />
-        </button>
+        <div 
+          onClick={!isConnecting ? toggleConnection : undefined} 
+          className={`
+            w-24 h-24 rounded-full flex items-center justify-center 
+            cursor-pointer select-none /* ← ボタンっぽく振る舞わせる */
+            transition-all duration-300 ease-in-out transform overflow-hidden
+            ${isConnecting ? 'opacity-50 cursor-wait scale-95' : 'hover:scale-110 active:scale-95 drop-shadow-2xl'}
+          `}
+        >
+           <Image 
+             src={isConnected ? CALL_IMAGES.END : CALL_IMAGES.START} 
+             alt={isConnected ? "End Call" : "Start Call"} 
+             width={100} 
+             height={100} 
+             /* 画像自体も拡大して枠いっぱいに広げる */
+             className="w-full h-full object-cover scale-110 pointer-events-none" 
+             priority 
+           />
+        </div>
         {isConnected && <div className="w-16" />} 
       </div>
 
