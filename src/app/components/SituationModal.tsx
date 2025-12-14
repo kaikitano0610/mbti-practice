@@ -17,7 +17,7 @@ export default function SituationModal({ isOpen, situation, onClose, onSelect }:
 			<div className="absolute inset-0 bg-black/50"
 				onClick={onClose}
 			/>
-			<div className="relative bg-white rounded-xl p-20 z-10">
+			<div className="relative bg-white rounded-xl py-8 px-4 z-10 w-full max-w-md mx-4 sm:mx-auto">
 				<h2 className="text-xl font-bold mb-4 text-center">シチュエーション選択</h2>
 
 				<select 
