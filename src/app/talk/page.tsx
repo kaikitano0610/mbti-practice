@@ -258,6 +258,17 @@ function TalkContent() {
       return;
     }
 
+    try {
+      // マイクのストリームを一瞬だけ取得して、ブラウザに「許可しますか？」を出させる
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // 許可が取れたら、このストリームは一旦不要なので止める（SDKが別途取得するため）
+      stream.getTracks().forEach(track => track.stop());
+    } catch (err) {
+      alert("マイクの使用が許可されていません。設定でマイクを許可してください。");
+      console.error("Mic permission denied:", err);
+      return; // 許可がない場合はここで止める
+    }
+
     setSessionStatus("CONNECTING");
     setReviewResult(null);
 
