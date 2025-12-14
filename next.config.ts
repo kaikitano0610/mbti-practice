@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /* config options here */
   devIndicators: false,
   eslint: {
@@ -13,6 +13,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
-};
+} as NextConfig;
 
 export default nextConfig;
