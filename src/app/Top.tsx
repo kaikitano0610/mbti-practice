@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 import SituationModal from "./components/SituationModal";
-import { Situation, Situations } from "./lib/situations";
 
 // ローディング用のスピナーコンポーネント（見た目は自由に変更可能です）
 const LoadingSpinner = () => (

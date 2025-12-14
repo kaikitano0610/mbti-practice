@@ -6,7 +6,6 @@ import {
 	PartnerPronoun,
 	Relationship,
 	EmotionExpression,
-	Interests,
 	AdditionalContext,
 	RelationshipLabels,
 	EmotionLabels,

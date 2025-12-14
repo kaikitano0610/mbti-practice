@@ -150,7 +150,6 @@ const LoveMeter = ({ score }: { score: number }) => {
 
 function TalkContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const agentKey = searchParams.get("agent") || "ENTP"; 
   const situationKey = searchParams.get("situation") || "default";
@@ -445,7 +444,7 @@ function TalkContent() {
                 <div className="w-full bg-pink-50 rounded-xl p-4 mb-4 border border-pink-100">
                   <h3 className="text-sm font-bold text-pink-500 mb-1">💕 こう言われたら、ちょっと嬉しいかも</h3>
                   <p className="text-gray-800 text-sm italic">
-                    "{reviewResult.best_response}"
+                    &quot;{reviewResult.best_response}&quot;
                   </p>
                 </div>
               )}

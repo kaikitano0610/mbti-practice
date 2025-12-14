@@ -57,7 +57,7 @@ export default function SingleCard({
             <button
                 onClick={(e) => {
                     e.stopPropagation(); // カードクリック（遷移）を防ぐ
-                    onEdit && onEdit();
+                    if (onEdit) onEdit();
                 }}
                 className="
                     z-10 text-xs bg-gray-100 text-gray-600 border border-gray-300 px-3 py-1 rounded-full 

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Situation, Situations } from "../lib/situations";
+import { Situations } from "../lib/situations";
 
 type Props = {
 	isOpen: boolean;
