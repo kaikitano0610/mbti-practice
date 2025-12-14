@@ -2,21 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ↓ 変数定義もシンプルに一本化します */
 :root {
-  --background: #fafafa;
+  /* ここをあなたのアプリの背景色(#fff6ea)に合わせておくとより安全です */
+  --background: #fff6ea;
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ★削除: @media (prefers-color-scheme: dark) { ... } のブロックは消します */
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Mochiy Pop P One', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+/* 基本設定 */
+@layer base {
+  :root {
+    /* ブラウザやOSに「このサイトはライトモード専用だよ」と宣言 */
+    color-scheme: light;
+  }
+
+  body {
+    /* 背景色と文字色を強制指定 */
+    @apply bg-[#fff6ea] text-gray-900;
+    
+    /* フォント設定 */
+    font-family: 'Mochiy Pop P One', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+
+  /* 入力フォーム系も強制的に「白背景・黒文字」にする */
+  input, select, textarea {
+    @apply bg-white text-gray-900 border-gray-300;
+  }
 }

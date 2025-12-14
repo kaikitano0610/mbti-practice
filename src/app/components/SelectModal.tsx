@@ -62,7 +62,7 @@ export default function SelectModal({ open, onClose, selectedMbti, onSubmit, ini
 		
         {/* 名前 */}
 		<div>
-			<p className="mb-2 text-sm font-bold">なんて呼ぶ？</p>
+			<p className="mb-2 text-sm font-bold">相手のことをなんて呼ぶ？</p>
 			<input
 				type="text"
 				value={partnerName}
